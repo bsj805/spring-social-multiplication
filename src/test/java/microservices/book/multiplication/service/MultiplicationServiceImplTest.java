@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import microservices.book.multiplication.domain.Multiplication;
+import microservices.book.multiplication.domain.MultiplicationResultAttempt;
+import microservices.book.multiplication.domain.User;
 
 public class MultiplicationServiceImplTest {
 
@@ -17,6 +19,7 @@ public class MultiplicationServiceImplTest {
 	@Mock
 	private RandomGeneratorService randomGeneratorService;
 
+	private MultiplicationResultAttempt multiplicationResultAttempt;
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
@@ -34,6 +37,35 @@ public class MultiplicationServiceImplTest {
 		//assert
 		assertThat(multiplication.getFactorA()).isEqualTo(50);
 		assertThat(multiplication.getFactorB()).isEqualTo(30);
-		assertThat(multiplication.getResult()).isEqualTo(1500);
+		// assertThat(multiplication.getResult()).isEqualTo(1500);
+	}
+
+	@Test
+	public void checkCorrectAttemptTest() {
+		Multiplication multiplication = new Multiplication(50,60);
+		User user = new User("John_doe");
+		MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user,
+			multiplication, 3000);
+
+		//when
+		boolean attemptResult = multiplicationServiceImpl.checkAttempt(attempt);
+
+		//assert
+		assertThat(attemptResult).isTrue();
+	}
+
+	@Test
+	public void checkWrongAttemptTest() {
+
+		Multiplication multiplication = new Multiplication(50,60);
+		User user = new User("John_doe");
+		MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user,
+			multiplication, 3010);
+
+		//when
+		boolean attemptResult = multiplicationServiceImpl.checkAttempt(attempt);
+
+		//assert
+		assertThat(attemptResult).isFalse();
 	}
 }
